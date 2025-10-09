@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: SAM template for portable TypeScript application - Lambda Container
+
+Globals:
+  Function:
+    Timeout: 3
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin: "'*'"
+    Auth:
+      DefaultAuthorizer: NONE
+
+Resources:
+  UserApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: GET
+        GetUserById:
+          Type: Api
+          Properties:
+            Path: /users/{id}
+            Method: GET
+        CreateUser:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: POST
+        HealthCheck:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: GET
+        DeleteUser:
+          Type: Api
+          Properties:
+            Path: /users/{id}
+            Method: DELETE
+        Version:
+          Type: Api
+          Properties:
+            Path: /version
+            Method: GET
+    Metadata:
+      DockerTag: nodejs22.x-v1
+      DockerContext: ../../..
+      Dockerfile: deployment/lambda/container/Dockerfile
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Stage/
+
+  TestCommands:
+    Description: "Test commands for the API endpoints"
+    Value: !Sub |
+      \
+      # Health check:
+      curl -X GET https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/health
+
+      # Create a new user:
+      curl -X POST https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users \
+        -H 'Content-Type: application/json' \
+        -d '{
+          "name": "Test User 1",
+          "email": "user1@example.com"
+        }'
+
+      # Get all users:
+      curl -X GET https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users
+
+      # Get user by ID (replace {id} with the actual user ID):
+      curl -X GET https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users/{id}
+
+      # Delete user by ID (replace {id} with the actual user ID):
+      curl -X DELETE https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users/{id}

@@ -1,0 +1,9 @@
+.DS_Store
+**/.DS_Store
+.vscode/
+node_modules/
+dist/
+deployment/lambda/zip/.aws-sam/
+deployment/lambda/container/.aws-sam/
+deployment/lambda/web-adapter/.aws-sam/
+coverage/

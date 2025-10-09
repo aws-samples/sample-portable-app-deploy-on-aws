@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for ECS Fargate service and task definition
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+  ImageRepository:
+    Type: String
+    Description: ECR repository URL
+  ImageTag:
+    Type: String
+    Default: latest
+  DesiredCount:
+    Type: String
+    Default: "1"
+    Description: Desired number of tasks to run in the service
+
+Resources:
+  # ECS Task Definition
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-task
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !ImportValue portable-ecs:ExecutionRoleArn
+      TaskRoleArn: !ImportValue portable-ecs:TaskRoleArn
+      ContainerDefinitions:
+        - Name: app
+          Image: !Sub ${ImageRepository}:${ImageTag}
+          PortMappings:
+            - ContainerPort: 3000
+          Environment:
+            - Name: NODE_ENV
+              Value: !Ref Environment
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - curl -f http://localhost:3000/health || exit 1
+            Interval: 15
+            Timeout: 5
+            Retries: 2
+            StartPeriod: 60
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !ImportValue portable-ecs:LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+
+  # ECS Service
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub ${AWS::StackName}-service
+      Cluster: !ImportValue portable-ecs:ClusterName
+      TaskDefinition: !Ref TaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !ImportValue portable-ecs:PublicSubnet1
+            - !ImportValue portable-ecs:PublicSubnet2
+          SecurityGroups:
+            - !ImportValue portable-ecs:ServiceSecurityGroup
+      LoadBalancers:
+        - ContainerName: app
+          ContainerPort: 3000
+          TargetGroupArn: !ImportValue portable-ecs:TargetGroupArn
+
+Outputs:
+  ServiceName:
+    Description: Name of the ECS Service
+    Value: !GetAtt Service.Name
+  TaskDefinitionArn:
+    Description: ARN of the Task Definition
+    Value: !Ref TaskDefinition

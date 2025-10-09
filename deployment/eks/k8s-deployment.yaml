@@ -1,0 +1,66 @@
+# Service configuration for exposing the application
+# Uses LoadBalancer type to create an AWS ALB/NLB
+apiVersion: v1
+kind: Service
+metadata:
+  name: portable-service
+spec:
+  type: LoadBalancer  # Creates AWS Load Balancer
+  ports:
+    - port: 3000      # Port exposed by the load balancer
+      targetPort: 3000  # Port the container listens on
+      protocol: TCP
+  selector:
+    app: portable-app  # Selects pods with this label
+---
+# Deployment configuration for the application
+# Manages the creation and scaling of pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portable-app
+spec:
+  replicas: 1  # Number of pod replicas to maintain
+  selector:
+    matchLabels:
+      app: portable-app
+  template:
+    metadata:
+      labels:
+        app: portable-app
+    spec:
+      serviceAccountName: portable-service-account  # IAM role for pod
+      containers:
+        - name: app
+          image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/portable-container-eks:${IMAGE_TAG}
+          ports:
+            - containerPort: 3000  # Container port to expose
+          env:
+            - name: NODE_ENV
+              value: "dev"
+          # Resource allocation and limits
+          resources:
+            requests:
+              cpu: "250m"     # 0.25 CPU cores requested
+              memory: "512Mi"  # 512MB memory requested
+            limits:
+              cpu: "500m"     # Max 0.5 CPU cores
+              memory: "1Gi"   # Max 1GB memory
+          # Health check configuration
+          livenessProbe:
+            httpGet:
+              path: /health   # Health check endpoint
+              port: 3000
+            initialDelaySeconds: 60  # Wait before first check
+            periodSeconds: 15        # Check interval
+            timeoutSeconds: 5        # Timeout for check
+            failureThreshold: 2      # Failed checks before restart
+          # Readiness check configuration
+          readinessProbe:
+            httpGet:
+              path: /health   # Readiness check endpoint
+              port: 3000
+            initialDelaySeconds: 30  # Wait before first check
+            periodSeconds: 15        # Check interval
+            timeoutSeconds: 5        # Timeout for check
+            failureThreshold: 2      # Failed checks before unready

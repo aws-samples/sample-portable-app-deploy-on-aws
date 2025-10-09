@@ -1,0 +1,7 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "portable-lambda-web-adapter"
+resolve_s3 = true
+s3_prefix = "portable-lambda-web-adapter"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"

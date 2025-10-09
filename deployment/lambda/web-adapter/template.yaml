@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: SAM template for portable TypeScript application - Lambda Web-Adapter
+
+Globals:
+  Function:
+    Timeout: 29
+
+Resources:
+  WebAdapter:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      MemorySize: 1024
+      Environment:
+        Variables:
+          RUST_LOG: info
+      Architectures:
+        - x86_64
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+        RootAny:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+    Metadata:
+      DockerTag: v1
+      DockerContext: ./.aws-sam
+      Dockerfile: Dockerfile
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for Express function"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+
+  TestCommands:
+    Description: "Test commands for the API endpoints"
+    Value: !Sub |
+      \
+      # Health check:
+      curl -X GET https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/health
+
+      # Create a new user:
+      curl -X POST https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/users \
+        -H 'Content-Type: application/json' \
+        -d '{
+          "name": "Test User 1",
+          "email": "user1@example.com"
+        }'
+
+      # Get all users:
+      curl -X GET https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/users
+
+      # Get user by ID (replace {id} with the actual user ID):
+      curl -X GET https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/users/{id}
+
+      # Delete user by ID (replace {id} with the actual user ID):
+      curl -X DELETE https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/users/{id}
