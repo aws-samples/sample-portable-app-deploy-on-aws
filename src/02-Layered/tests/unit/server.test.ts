@@ -46,14 +46,14 @@ describe('Server', () => {
     }
   });
 
-  it('should start server on default port 3000 when PORT env is not set', async () => {
+  it('should start server on default port 8081 when PORT env is not set', async () => {
     const { server } = await import('../../server');
 
-    expect(mockListen).toHaveBeenCalledWith(3000, expect.any(Function));
+    expect(mockListen).toHaveBeenCalledWith(8081, expect.any(Function));
     expect(mockConsoleLog).toHaveBeenCalledWith('Starting local development server...');
     expect(mockConsoleLog).toHaveBeenCalledWith('Creating Express application instance');
     expect(mockConsoleLog).toHaveBeenCalledWith('Initializing Express application dependencies');
-    expect(mockConsoleLog).toHaveBeenCalledWith('Using port: 3000');
+    expect(mockConsoleLog).toHaveBeenCalledWith('Using port: 8081');
     // Check for ASCII art and server start message
     expect(mockConsoleLog).toHaveBeenCalledWith(`
  _                              _ 
@@ -64,17 +64,17 @@ describe('Server', () => {
             |___/                 
 `);
     expect(mockConsoleLog).toHaveBeenCalledWith('🚀 Server successfully started!');
-    expect(mockConsoleLog).toHaveBeenCalledWith('📡 Server running at http://localhost:3000\n');
+    expect(mockConsoleLog).toHaveBeenCalledWith('📡 Server running at http://localhost:8081\n');
   });
 
   it('should start server on specified PORT from environment variable', async () => {
-    process.env.PORT = '3000';
+    process.env.PORT = '8081';
     
     const { server } = await import('../../server');
 
-    expect(mockListen).toHaveBeenCalledWith(3000, expect.any(Function));
-    expect(mockConsoleLog).toHaveBeenCalledWith('Using port: 3000');
-    expect(mockConsoleLog).toHaveBeenCalledWith('📡 Server running at http://localhost:3000\n');
+    expect(mockListen).toHaveBeenCalledWith(8081, expect.any(Function));
+    expect(mockConsoleLog).toHaveBeenCalledWith('Using port: 8081');
+    expect(mockConsoleLog).toHaveBeenCalledWith('📡 Server running at http://localhost:8081\n');
   });
 
   it('should log all available endpoints', async () => {

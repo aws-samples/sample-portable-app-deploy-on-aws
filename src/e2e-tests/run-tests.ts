@@ -332,7 +332,7 @@ export async function main(deploymentType: DeploymentType) {
           console.error('\n❌ Local server is not running or not accessible!');
           console.error('Please verify:');
           console.error('1. The server is running (npm run start)');
-          console.error('2. It is accessible on port 3000');
+          console.error('2. It is accessible on port 8081');
           console.error('3. No other service is blocking the port');
           throw new Error('Local server connection failed. Please check the server status.');
         }

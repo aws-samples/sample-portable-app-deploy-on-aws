@@ -18,8 +18,8 @@ const expressApiAdapter = new ExpressApiAdapter(userManagementService);
  */
 export async function startServer(customPort?: number): Promise<void> {
     try {
-        const envPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-        const port = customPort || (isNaN(envPort) ? 3000 : envPort);
+        const envPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 8081;
+        const port = customPort || (isNaN(envPort) ? 8081 : envPort);
 
         expressApiAdapter.start(port);
 

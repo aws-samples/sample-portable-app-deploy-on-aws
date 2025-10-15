@@ -2,7 +2,7 @@
 
 # Get AWS profile information
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-AWS_REGION=$(aws configure get region)
+AWS_REGION=$(aws configure get region || echo "us-east-1")
 
 if [ -z "$AWS_ACCOUNT_ID" ] || [ -z "$AWS_REGION" ]; then
     echo "❌ Error: Could not get AWS Account ID or Region"
@@ -46,6 +46,35 @@ echo "🚀 Deploying to Kubernetes..."
 export AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
 export AWS_REGION=$AWS_REGION
 export IMAGE_TAG=$IMAGE_TAG
+
+
+# Update kubeconfig
+echo ""
+echo ""
+echo "🔄 Updating kubeconfig..."
+aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+
+# Create OIDC provider for service account
+echo ""
+echo ""
+echo "🔐 Creating OIDC provider for service accounts..."
+eksctl utils associate-iam-oidc-provider \
+    --cluster $CLUSTER_NAME \
+    --region $AWS_REGION \
+    --approve
+
+# Create IAM role and service account for pod execution
+echo ""
+echo ""
+echo "👤 Creating service account and IAM role..."
+eksctl create iamserviceaccount \
+    --name portable-service-account \
+    --namespace default \
+    --cluster $CLUSTER_NAME \
+    --region $AWS_REGION \
+    --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy \
+    --approve
+
 envsubst < deployment/eks/k8s-deployment.yaml | kubectl apply -f -
 
 # Wait for deployment
@@ -63,4 +92,4 @@ LOAD_BALANCER_DNS=$(kubectl get service portable-service -o jsonpath='{.status.l
 echo ""
 echo ""
 echo "✅ Service deployment completed!"
-echo "🌐 Service URL: http://$LOAD_BALANCER_DNS:3000"
+echo "🌐 Service URL: http://$LOAD_BALANCER_DNS:8081"

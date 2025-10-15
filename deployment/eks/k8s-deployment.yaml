@@ -7,8 +7,8 @@ metadata:
 spec:
   type: LoadBalancer  # Creates AWS Load Balancer
   ports:
-    - port: 3000      # Port exposed by the load balancer
-      targetPort: 3000  # Port the container listens on
+    - port: 8081      # Port exposed by the load balancer
+      targetPort: 8081  # Port the container listens on
       protocol: TCP
   selector:
     app: portable-app  # Selects pods with this label
@@ -34,7 +34,7 @@ spec:
         - name: app
           image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/portable-container-eks:${IMAGE_TAG}
           ports:
-            - containerPort: 3000  # Container port to expose
+            - containerPort: 8081  # Container port to expose
           env:
             - name: NODE_ENV
               value: "dev"
@@ -50,7 +50,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /health   # Health check endpoint
-              port: 3000
+              port: 8081
             initialDelaySeconds: 60  # Wait before first check
             periodSeconds: 15        # Check interval
             timeoutSeconds: 5        # Timeout for check
@@ -59,7 +59,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health   # Readiness check endpoint
-              port: 3000
+              port: 8081
             initialDelaySeconds: 30  # Wait before first check
             periodSeconds: 15        # Check interval
             timeoutSeconds: 5        # Timeout for check

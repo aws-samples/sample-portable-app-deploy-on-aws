@@ -4,7 +4,7 @@ console.log('Starting local development server...');
 console.log('Creating Express application instance');
 console.log('Initializing Express application dependencies');
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8081;
 console.log(`Using port: ${PORT}`);
 
 export const server = app.listen(PORT, () => {

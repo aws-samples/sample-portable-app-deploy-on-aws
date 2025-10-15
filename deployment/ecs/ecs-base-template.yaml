@@ -120,7 +120,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       TargetType: ip
-      Port: 3000
+      Port: 8081
       Protocol: HTTP
       VpcId: !Ref VPC
       HealthCheckPath: /health
@@ -133,7 +133,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref LoadBalancer
-      Port: 3000
+      Port: 8081
       Protocol: HTTP
       DefaultActions:
         - Type: forward
@@ -147,13 +147,13 @@ Resources:
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
+          FromPort: 8081
+          ToPort: 8081
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
+          FromPort: 8081
+          ToPort: 8081
           DestinationSecurityGroupId: !Ref ServiceSecurityGroup
           Description: Allow outbound traffic to ECS service
 
@@ -164,8 +164,8 @@ Resources:
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
+          FromPort: 8081
+          ToPort: 8081
           SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
       SecurityGroupEgress:
         - IpProtocol: tcp
