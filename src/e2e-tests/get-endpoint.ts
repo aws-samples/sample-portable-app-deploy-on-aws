@@ -28,7 +28,7 @@ export async function getEndpoint(type: DeploymentType): Promise<string> {
     case 'eks':
       return getEksEndpoint();
     case 'local':
-      return 'http://127.0.0.1:3000';
+      return 'http://127.0.0.1:8081';
     case 'lambda-web-adapter':
       return getLambdaEndpoint('portable-lambda-web-adapter');
     default:
@@ -147,7 +147,7 @@ function getEcsEndpoint(): string {
 
     const loadBalancerDNS = result.stdout.trim();
     
-    return `http://${loadBalancerDNS}:3000`;
+    return `http://${loadBalancerDNS}:8081`;
   } catch (error: any) {
     if (error.message.includes('The ECS stack has not been deployed yet')) {
       throw error;
@@ -188,7 +188,7 @@ async function getEksEndpoint(): Promise<string> {
 
     const loadBalancerDns = result.stdout.trim();
 
-    return `http://${loadBalancerDns}:3000`;
+    return `http://${loadBalancerDns}:8081`;
   } catch (error: any) {
     if (error.message.includes('The EKS service has not been deployed yet')) {
       throw error;

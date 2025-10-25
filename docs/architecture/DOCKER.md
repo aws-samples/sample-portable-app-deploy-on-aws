@@ -27,9 +27,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 COPY --from=builder /app/dist ./dist
-EXPOSE 3000
+EXPOSE 8081
 HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD curl -f http://localhost:8081/health || exit 1
 CMD ["node", "dist/infrastructure/local/server.js"]
 ```
 
@@ -107,7 +107,7 @@ To integrate with CI/CD pipelines, use the scripts in the following order:
 ### Check Health Status
 ```bash
 # Manual check
-curl http://localhost:3000/health
+curl http://localhost:8081/health
 
 # View container health check status
 docker inspect portable-app | grep Health

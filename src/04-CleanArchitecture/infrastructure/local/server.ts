@@ -13,7 +13,7 @@ export function startServer(): Server {
   console.debug('Creating Express application instance');
   const app = createExpressApp();
   
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 8081;
   console.debug('Using port:', port);
 
   const server = app.listen(port);

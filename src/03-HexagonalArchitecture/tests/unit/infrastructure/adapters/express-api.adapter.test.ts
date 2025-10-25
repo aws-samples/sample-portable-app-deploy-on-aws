@@ -294,7 +294,7 @@ describe('ExpressApiAdapter', () => {
     });
 
     it('should start server and log success message', () => {
-      const port = 3000;
+      const port = 8081;
       apiAdapter.start(port);
 
       expect(mockListen).toHaveBeenCalledWith(port, expect.any(Function));

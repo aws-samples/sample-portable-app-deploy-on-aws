@@ -48,7 +48,7 @@ describe('Server', () => {
 
   it('should start server with default port when PORT env is not set', async () => {
     await startServer();
-    expect(mockStart).toHaveBeenCalledWith(3000);
+    expect(mockStart).toHaveBeenCalledWith(8081);
     expect(mockConsoleLog).toHaveBeenCalledWith(`
  _    _                                        _ 
 | |  | |                                      | |
@@ -99,7 +99,7 @@ describe('Server', () => {
   it('should handle invalid PORT environment variable', async () => {
     process.env.PORT = 'invalid';
     await startServer();
-    expect(mockStart).toHaveBeenCalledWith(3000); // Should use default port
+    expect(mockStart).toHaveBeenCalledWith(8081); // Should use default port
     expect(mockConsoleLog).toHaveBeenCalledWith(`
  _    _                                        _ 
 | |  | |                                      | |

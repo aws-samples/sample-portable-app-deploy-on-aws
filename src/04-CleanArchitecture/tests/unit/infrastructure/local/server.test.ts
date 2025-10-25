@@ -60,11 +60,11 @@ describe('Local Server', () => {
     process.removeAllListeners('SIGINT');
   });
 
-  it('should start server on default port 3000', () => {
+  it('should start server on default port 8081', () => {
     const server = startServer();
 
     expect(expressApp.createExpressApp).toHaveBeenCalled();
-    expect(mockApp.listen).toHaveBeenCalledWith(3000);
+    expect(mockApp.listen).toHaveBeenCalledWith(8081);
     
     // Verify startup logs in order
     const calls = mockConsole.log.mock.calls.map(call => call[0]);
@@ -79,7 +79,7 @@ describe('Local Server', () => {
  \\_____|_|\\___|\\__,_|_| |_|
 `,
       '🚀 Server successfully started!',
-      '📡 Server running at http://localhost:3000',
+      '📡 Server running at http://localhost:8081',
       '\n📍 Available endpoints:',
       '  GET    /health    - Health check endpoint',
       '  GET    /version   - Get architecture version',
@@ -92,13 +92,13 @@ describe('Local Server', () => {
   });
 
   it('should start server on custom port from environment variable', () => {
-    process.env.PORT = '3000';
+    process.env.PORT = '8081';
 
     const server = startServer();
 
     expect(expressApp.createExpressApp).toHaveBeenCalled();
-    expect(mockApp.listen).toHaveBeenCalledWith('3000');
-    expect(mockConsole.log.mock.calls.map(call => call[0])).toContain('📡 Server running at http://localhost:3000');
+    expect(mockApp.listen).toHaveBeenCalledWith('8081');
+    expect(mockConsole.log.mock.calls.map(call => call[0])).toContain('📡 Server running at http://localhost:8081');
   });
 
   it('should log debug messages during startup', () => {
@@ -106,7 +106,7 @@ describe('Local Server', () => {
 
     expect(mockConsole.debug.mock.calls).toEqual([
       ['Creating Express application instance'],
-      ['Using port:', 3000]
+      ['Using port:', 8081]
     ]);
   });
 
@@ -255,7 +255,7 @@ describe('Local Server', () => {
       .find(([event]: [string, unknown]) => event === 'error')[1] as (error: Error) => void;
     errorHandler(mockError);
 
-    expect(mockConsole.error).toHaveBeenCalledWith('❌ Port 3000 is already in use');
+    expect(mockConsole.error).toHaveBeenCalledWith('❌ Port 8081 is already in use');
     expect(mockConsole.error).toHaveBeenCalledWith('Please try using a different port by setting the PORT environment variable');
     expect(mockExit).toHaveBeenCalledWith(1);
   });
@@ -380,7 +380,7 @@ describe('Local Server', () => {
  \\_____|_|\\___|\\__,_|_| |_|
 `,
       '🚀 Server successfully started!',
-      '📡 Server running at http://localhost:3000',
+      '📡 Server running at http://localhost:8081',
       '\n📍 Available endpoints:',
       '  GET    /health    - Health check endpoint',
       '  GET    /version   - Get architecture version',

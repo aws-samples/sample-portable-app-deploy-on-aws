@@ -37,14 +37,14 @@ Resources:
         - Name: app
           Image: !Sub ${ImageRepository}:${ImageTag}
           PortMappings:
-            - ContainerPort: 3000
+            - ContainerPort: 8081
           Environment:
             - Name: NODE_ENV
               Value: !Ref Environment
           HealthCheck:
             Command:
               - CMD-SHELL
-              - curl -f http://localhost:3000/health || exit 1
+              - curl -f http://localhost:8081/health || exit 1
             Interval: 15
             Timeout: 5
             Retries: 2
@@ -75,7 +75,7 @@ Resources:
             - !ImportValue portable-ecs:ServiceSecurityGroup
       LoadBalancers:
         - ContainerName: app
-          ContainerPort: 3000
+          ContainerPort: 8081
           TargetGroupArn: !ImportValue portable-ecs:TargetGroupArn
 
 Outputs:

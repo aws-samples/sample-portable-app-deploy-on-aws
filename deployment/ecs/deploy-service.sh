@@ -2,7 +2,7 @@
 
 # Get AWS profile information
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-AWS_REGION=$(aws configure get region)
+AWS_REGION=$(aws configure get region || echo "us-east-1")
 
 if [ -z "$AWS_ACCOUNT_ID" ] || [ -z "$AWS_REGION" ]; then
     echo "❌ Error: Could not get AWS Account ID or Region"
@@ -65,4 +65,4 @@ aws cloudformation describe-stacks \
 
 echo ""
 echo "✅ Service deployment completed!"
-echo "🌐 Service URL: http://$(aws cloudformation describe-stacks --stack-name portable-ecs --query 'Stacks[0].Outputs[?OutputKey==`LoadBalancerDNS`].OutputValue' --output text):3000"
+echo "🌐 Service URL: http://$(aws cloudformation describe-stacks --stack-name portable-ecs --query 'Stacks[0].Outputs[?OutputKey==`LoadBalancerDNS`].OutputValue' --output text):8081"
