@@ -68,7 +68,9 @@ describe('Lambda Handler', () => {
           principalOrgId: null,
           userAgent: 'Custom User Agent String',
           user: null,
-          userArn: null
+          userArn: null,
+          vpceId: null,
+          vpcId: null
         },
         path: '/test',
         stage: 'test',
