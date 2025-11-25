@@ -13,9 +13,9 @@ echo $PROJECT_ROOT
 
 # Copy Dockerfile and add Lambda Web Adapter
 cp $PROJECT_ROOT/Dockerfile .aws-sam/Dockerfile
-sed -i '' '/FROM node:22-slim/a\
+sed -i.bak '/FROM node:22-slim/a\
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt/extensions/lambda-adapter
-' .aws-sam/Dockerfile
+' .aws-sam/Dockerfile && rm .aws-sam/Dockerfile.bak
 
 # Copy necessary files
 mkdir -p .aws-sam/dist
