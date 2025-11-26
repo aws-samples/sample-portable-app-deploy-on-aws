@@ -41,6 +41,9 @@ const colors = {
 // Valid architecture versions
 const validVersions = ['monolith', 'layered-architecture', 'hexagonal-architecture', 'clean-architecture'];
 
+// Sleep utility to prevent Lambda cold starts and ensure container reuse
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Run tests against API
 async function runTests(apiUrl: string, deploymentType: DeploymentType) {
   console.log(`\n🧪 Testing ${deploymentType} API at ${apiUrl}`);
@@ -62,6 +65,9 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
       await waitForEndpoint(apiUrl);
     }
 
+    // Small delay to ensure Lambda container warmup
+    await sleep(500);
+
     // Test health endpoint
     console.log("\nTesting health endpoint...");
     try {
@@ -72,6 +78,8 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
       testResults[0].errors++;
       throw error;
     }
+
+    await sleep(200);
 
     // Test version endpoint
     console.log("\nTesting version endpoint...");
@@ -89,6 +97,8 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
       testResults[1].errors++;
       throw error;
     }
+
+    await sleep(200);
     
     let users: User[] = [];
     
@@ -105,6 +115,7 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
           );
           console.log(`Create user response for ${user.name}:`, createResponse.status);
           testResults[2].success++;
+          await sleep(200);
         } catch (error) {
           testResults[2].errors++;
           throw error;
@@ -122,6 +133,8 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
         testResults[3].errors++;
         throw error;
       }
+
+      await sleep(200);
       
       // Verify if both users were returned
       console.log("Users returned:", users);
@@ -134,6 +147,8 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
         throw new Error(`Expected ${testUsers.length} users, but got ${createdUsers.length}`);
       }
       console.log("✅ All users were created and retrieved successfully");
+
+      await sleep(200);
 
       // Test get user by ID
       console.log("\nTesting get user by ID...");
@@ -155,6 +170,8 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
         throw new Error(`Expected user with ID ${userId}, but got ${user.id}`);
       }
       console.log("✅ User was retrieved successfully by ID");
+
+      await sleep(200);
 
       // Test get non-existent user
       console.log("\nTesting get non-existent user...");
@@ -179,6 +196,7 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
           try {
             await axios.delete(`${apiUrl}/users/${userToDelete.id}`);
             console.log(`Cleaned up user: ${userToDelete.id}`);
+            await sleep(100);
           } catch (error) {
             console.log(`Failed to cleanup user ${userToDelete.id}:`, error);
           }
@@ -201,6 +219,7 @@ async function runTests(apiUrl: string, deploymentType: DeploymentType) {
         const deleteResponse = await axios.delete(`${apiUrl}/users/${deleteTestUser.id}`);
         console.log(`Delete user response:`, deleteResponse.status);
         testResults[6].success += 0.5;
+        await sleep(200);
 
         // Verify user was deleted
         try {
