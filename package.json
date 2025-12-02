@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@vendia/serverless-express": "^4.12.6",
-    "express": "^5.0.1"
+    "express": "^5.2.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
