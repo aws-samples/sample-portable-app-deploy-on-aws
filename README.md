@@ -247,11 +247,6 @@ These records serve as a historical reference and knowledge base, helping team m
 
 For detailed information about our architectural decisions and their rationale, please refer to our [Architecture Decision Records](./docs/architecture-decision-records/README.md).
 
-## 10. Author
-- Daniel ABIB - Specialist Solutions Architect for Startups - Bedrock & Serverless
-- Email: daniabib@amazon.com
-
-
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
